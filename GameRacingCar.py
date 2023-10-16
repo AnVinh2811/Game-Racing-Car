@@ -12,6 +12,7 @@ green=(76,208,56)
 yellow=(255,232,0)
 red=(200,0,0)
 white=(255,255,255)
+black=(0,0,0)
 
 #Tạo cửa sổ game
 width=500
@@ -76,13 +77,77 @@ for name in image_name:
 #Tạo va chạm
 crash=pygame.image.load('images/crash.png')
 crash_rect=crash.get_rect()
-#Tạo chiến thắng
-firework=pygame.image.load('images/firework.png')
-firework_rect=firework.get_rect()
+
 #Cài đặt khung hình/s (FPS)
 clock=pygame.time.Clock()
 fps=120
+# Tạo màn hình dừng
+def show_start_screen():
+    # Vẽ nền màn hình dừng
+    #Vẽ địa hình cỏ
+    screen.fill(green)
+    #Vẽ mặt đường
+    pygame.draw.rect(screen,gray,road)
+    #Vẽ biên đường
+    pygame.draw.rect(screen,yellow,left_edge)    
+    pygame.draw.rect(screen,yellow,right_edge)
+    #Vẽ lane đường
+    # lane_move_Y+=speed * 2
+    # if lane_move_Y >= street_height * 2:
+    #     lane_move_Y=0
+    for y in range(street_height * -2,height,street_height*2):
+        pygame.draw.rect(screen,white,(lane_left + 45,y + lane_move_Y, street_width,street_height))
+        pygame.draw.rect(screen,white,(lane_center + 45,y + lane_move_Y, street_width,street_height))
+    #Vẽ xe người chơi
+    player_group.draw(screen)
+    
+    # Vẽ các đối tượng, văn bản, hình ảnh cần thiết trên màn hình dừng
+    font=pygame.font.Font(pygame.font.get_default_font(),15)
+    font1=pygame.font.Font(pygame.font.get_default_font(),16)    
+    font2=pygame.font.Font(pygame.font.get_default_font(),20)
 
+    text = font1.render('Press "Space" to play', True, white)
+    text_rect = text.get_rect(center=(240,480))
+    ###################################
+    text_guide=font2.render("HOW TO PLAY?", True, black)
+    text_guide_rect = text.get_rect(center=(250,60))
+    ###################################
+    text_guide1=font.render("Control the vehicle using the left and right keys on the keyboard.", True, black)
+    text_guide1_rect = text.get_rect(center=(100,90))
+    ###################################
+    text_guide2=font.render("Passing traffic cars will give you 1 point.", True, black)
+    text_guide2_rect = text.get_rect(center=(185,110))
+    ###################################
+    text_guide3=font.render("If Score = 10 the vehicle's speed will increase.", True, black)
+    text_guide3_rect = text.get_rect(center=(165,130))
+    ###################################
+    text_guide4=font.render("The game will end if there is a collision", True, black)
+    text_guide4_rect = text.get_rect(center=(185,150))
+    ###################################
+    screen.blit(text, text_rect)
+    screen.blit(text_guide,text_guide_rect)
+    screen.blit(text_guide1,text_guide1_rect)
+    screen.blit(text_guide2,text_guide2_rect)
+    screen.blit(text_guide3,text_guide3_rect)
+    screen.blit(text_guide4,text_guide4_rect)
+
+
+    # Cập nhật màn hình
+    pygame.display.flip()
+    
+    # Chờ người chơi nhấn phím để bắt đầu trò chơi
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key==K_SPACE:
+                    waiting = False
+
+# Hiển thị màn hình dừng trước khi bắt đầu trò chơi
+show_start_screen()
 ##Vòng lặp xử lý game
 running=True
 while running:
