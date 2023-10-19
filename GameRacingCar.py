@@ -20,7 +20,9 @@ height=500
 screen_size=(width,height)
 screen=pygame.display.set_mode(screen_size)
 pygame.display.set_caption("Xe Vượt Chướng Ngại Vật")
-mixer.music.load('music/BackgroundMusic.wav')
+
+#Tạo nhạc nền khi bắt đầu game
+pygame.mixer.music.load('music/BackgroundMusic.wav')
 mixer.music.play()
 
 #Khởi tạo biến
@@ -29,7 +31,7 @@ speed=2
 score=0
 kmh=40 #Km/h
 
-#Đường xe chạy
+#Đường xe chạy và vạch kẻ đường
 road_width=300
 street_width=10
 street_height=50
@@ -41,7 +43,7 @@ lane_right=350
 lanes=[lane_left,lane_center,lane_right]
 lane_move_Y=0
 
-#Đường và biên đường
+#Đường xe chạy và biên đường
 road=(100,0,road_width,height)
 left_edge=(95,0,street_width,height)
 right_edge=(395,0,street_width,height)
@@ -63,26 +65,27 @@ class Vehicle(pygame.sprite.Sprite):
         self.rect=self.image.get_rect()
         self.rect.center=(x,y)
 
-#Đối tượng xe người chơi
-class Player_vehicle(Vehicle):
-    def __init__(self,x,y):
-        image=pygame.image.load('images/car.png')
-        super().__init__(image,x,y)
-
-#Sprite groups
-player_group = pygame.sprite.Group()
-vehicle_group=pygame.sprite.Group()
-
-#Tạo xe người chơi
-player=Player_vehicle(player_x,player_y)
-player_group.add(player)
-
 #Tạo xe công cộng
 image_name=['pickup_truck.png','semi_trailer.png','taxi.png','van.png']
 Vehicle_image=[]
 for name in image_name:
     image=pygame.image.load('images/'+name)
     Vehicle_image.append(image)
+
+#Sprite groups
+player_group = pygame.sprite.Group()
+vehicle_group=pygame.sprite.Group()
+
+#Đối tượng xe người chơi
+class Player_vehicle(Vehicle):
+    def __init__(self,x,y):
+        image=pygame.image.load('images/car.png')
+        super().__init__(image,x,y)
+
+#Tạo xe người chơi
+player=Player_vehicle(player_x,player_y)
+player_group.add(player)
+
 
 #Tạo va chạm
 crash=pygame.image.load('images/crash.png')
@@ -92,10 +95,9 @@ crash_rect=crash.get_rect()
 clock=pygame.time.Clock()
 fps=120
 
-# Tạo màn hình dừng
+# Tạo màn hình hướng dẫn
 def show_start_screen():
     # Vẽ nền màn hình dừng
-
     #Vẽ địa hình cỏ
     screen.fill(green)
 
@@ -118,7 +120,7 @@ def show_start_screen():
     font=pygame.font.Font(pygame.font.get_default_font(),15)
     font1=pygame.font.Font(pygame.font.get_default_font(),16)    
     font2=pygame.font.Font(pygame.font.get_default_font(),20)
-
+    pygame.draw.rect(screen,white,(0,40,width,130))
     text = font1.render('Press "Space" to play', True, white)
     text_rect = text.get_rect(center=(240,480))
     ###################################
@@ -178,14 +180,7 @@ while running:
             if event.key==K_RIGHT and player.rect.center[0]<lane_right:
                 player.rect.x +=100
 
-        #Kiểm tra va chạm khi điều khiển 
-        for verhicle in vehicle_group:
-            if pygame.sprite.collide_rect(player,vehicle):
-                gameover=True
-                pygame.mixer.music.load('music/Loser.wav')
-                pygame.mixer.music.play()
-
-    #Kiểm tra va chạm khi xe đứng yên
+    #Kiểm tra va chạm 
     if pygame.sprite.spritecollide(player,vehicle_group,True):
         gameover=True
         crash_rect.center=[player.rect.center[0],player.rect.top]
